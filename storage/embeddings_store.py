@@ -1,0 +1,57 @@
+# SAVE =====================================================
+import json
+import os
+
+import numpy as np
+
+
+def save_workers_embeddings(workers, path="workers_embeddings.json"):
+
+    serializable_workers = []
+
+    for worker in workers:
+
+        serializable_workers.append({
+            "id": worker["id"],
+            "name": worker["name"],
+            "keywords": worker["keywords"],
+            "bio": worker["bio"],
+
+            "keyword_embedding":
+            worker["keyword_embedding"].tolist(),
+
+            "bio_embedding":
+            worker["bio_embedding"].tolist()
+        })
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(
+            serializable_workers,
+            f,
+            ensure_ascii=False
+        )
+
+    print(f"\nSaved embeddings to {path}")
+
+
+# LOAD =====================================================
+def load_workers_embeddings(path="workers_embeddings.json"):
+
+    if not os.path.exists(path):
+        return None
+
+    with open(path, "r", encoding="utf-8") as f:
+        workers = json.load(f)
+
+    for worker in workers:
+        worker["keyword_embedding"] = np.array(
+            worker["keyword_embedding"]
+        )
+
+        worker["bio_embedding"] = np.array(
+            worker["bio_embedding"]
+        )
+
+    print(f"\nLoaded cached embeddings from {path}")
+
+    return workers
