@@ -1,76 +1,95 @@
 import sys
 
 from config import (
-    API_URL,
     DEFAULT_CONTRACT,
     TOP_N_WORKERS
 )
 
 from loaders.contract_loader import load_contract
-from loaders.worker_loader import load_workers_from_api
 
 from utils.text_cleaning import clean_contract_text
 
-from embeddings.worker_embeddings import generate_worker_embeddings
-
-from embeddings.embedding_model import embedding_model
-
-from storage.embeddings_store import (
-    save_workers_embeddings,
-    load_workers_embeddings
+from services.worker_update_service import (
+    update_workers_embeddings
 )
 
-from ranking.ranker import rank_workers
+from services.match_service import (
+    match_contract
+)
 
+"""
+CLI entrypoint for worker matching system.
+"""
 
 # MAIN =====================================================
 if __name__ == "__main__":
 
-    # CONTRACT =========================================
-    if len(sys.argv) > 1:
-        contract_path = sys.argv[1]
+    # COMMANDS
+    # python main.py update
+    # python main.py match
+    # python main.py match contract.pdf
+
+
+
+
+    if len(sys.argv) < 2:
+
+        print("\nUsage:")
+        print("python main.py update")
+        print("python main.py match")
+        print("python main.py match contract.pdf")
+        sys.exit()
+
+
+    command = sys.argv[1]
+
+
+
+    # UPDATE WORKERS =======================================
+    if command == "update":
+        count = update_workers_embeddings()
+
+        print(f"Updated {count} workers")
+
+    # MATCH CONTRACT =======================================
+    elif command == "match":
+
+        # CONTRACT PATH
+        if len(sys.argv) > 2:
+            contract_path = sys.argv[2]
+        else:
+            contract_path = DEFAULT_CONTRACT
+
+
+        print(f"\nUsing contract file: {contract_path}")
+
+
+        # LOAD CONTRACT
+        raw_contract = load_contract(contract_path)
+        contract_text = clean_contract_text(raw_contract)
+
+        # MATCH
+        ranked = match_contract(contract_text)
+
+        # OUTPUT
+        print(f"\nTOP {TOP_N_WORKERS} WORKERS:")
+
+        for r in ranked[:TOP_N_WORKERS]:
+
+            print(
+                f"\n{r['name']} "
+                f"| final: {r['score']} "
+                f"| kw: {r['keyword_score']} "
+                f"| bio: {r['bio_score']}"
+            )
+
+            print("Keywords:")
+
+            for kw in r["keywords"][:5]:
+                print(f" - {kw}")
+
+
+    # UNKNOWN COMMAND
     else:
-        contract_path = DEFAULT_CONTRACT
 
-    print(f"\nUsing contract file: {contract_path}")
-
-    raw_contract = load_contract(contract_path)
-
-    contract_text = clean_contract_text(raw_contract)
-
-    # WORKERS TRY CACHE FIRST ======================
-    workers = load_workers_embeddings()
-    # CACHE MISS
-    if workers is None:
-        workers = load_workers_from_api(API_URL)
-
-        workers = generate_worker_embeddings(workers)
-
-        save_workers_embeddings(workers)
-
-    contract_embedding = embedding_model.encode(
-        [contract_text]
-    )[0]
-
-    # RANKING =========================================
-    ranked = rank_workers(
-        contract_embedding,
-        workers
-    )
-
-    # OUTPUT =========================================
-    print(f"\nTOP {TOP_N_WORKERS} WORKERS:")
-
-    for r in ranked[:TOP_N_WORKERS]:
-
-        print(
-            f"\n{r['name']} "
-            f"| final: {r['score']} "
-            f"| kw: {r['keyword_score']} "
-            f"| bio: {r['bio_score']}"
-        )
-
-        print("Keywords:")
-
-        for kw in r["keywords"][:3]:
-            print(f" - {kw}")
+        print(f"\nUnknown command: {command}")

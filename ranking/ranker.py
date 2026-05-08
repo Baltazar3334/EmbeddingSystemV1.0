@@ -1,5 +1,14 @@
-from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
+from config import (
+    KEYWORD_WEIGHT,
+    BIO_WEIGHT
+)
+
+"""
+Rank workers against a contract embedding
+using keyword and bio similarity scores.
+"""
 
 # RANK WORKERS =====================================================
 def rank_workers(contract_embedding, workers):
@@ -10,21 +19,21 @@ def rank_workers(contract_embedding, workers):
 
     for worker in workers:
 
-        keyword_score = cosine_similarity(
-            [contract_embedding],
-            [worker["keyword_embedding"]]
-        )[0][0]
+        keyword_score = np.dot(
+            contract_embedding,
+            worker["keyword_embedding"]
+        )
 
-        bio_score = cosine_similarity(
-            [contract_embedding],
-            [worker["bio_embedding"]]
-        )[0][0]
+        bio_score = np.dot(
+            contract_embedding,
+            worker["bio_embedding"]
+        )
 
         # WEIGHTED SCORE FUSION
         final_score = (
-            0.8 * keyword_score
-            +
-            0.2 * bio_score
+                KEYWORD_WEIGHT * keyword_score
+                +
+                BIO_WEIGHT * bio_score
         )
 
         ranked.append({

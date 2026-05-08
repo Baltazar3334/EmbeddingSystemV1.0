@@ -3,9 +3,13 @@ import json
 import os
 
 import numpy as np
+from config import EMBEDDINGS_CACHE_PATH
 
+"""
+Save and load worker embeddings cache.
+"""
 
-def save_workers_embeddings(workers, path="workers_embeddings.json"):
+def save_workers_embeddings(workers, path=EMBEDDINGS_CACHE_PATH):
 
     serializable_workers = []
 
@@ -35,7 +39,7 @@ def save_workers_embeddings(workers, path="workers_embeddings.json"):
 
 
 # LOAD =====================================================
-def load_workers_embeddings(path="workers_embeddings.json"):
+def load_workers_embeddings(path=EMBEDDINGS_CACHE_PATH):
 
     if not os.path.exists(path):
         return None

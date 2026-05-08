@@ -1,3 +1,9 @@
+
+"""
+Clean extracted contract text.
+Removes short lines and numeric-only lines.
+"""
+
 def clean_contract_text(text: str) -> str:
     lines = text.split("\n")
 

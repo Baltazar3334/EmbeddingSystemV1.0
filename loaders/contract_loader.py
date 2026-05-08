@@ -4,6 +4,10 @@ from docx import Document
 from PyPDF2 import PdfReader
 
 
+"""
+Load up contract text from a either a pdf or a docx file.
+"""
+
 # DOCX =====================================================
 def load_contract_from_docx(path: str) -> str:
 

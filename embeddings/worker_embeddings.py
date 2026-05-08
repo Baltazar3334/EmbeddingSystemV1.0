@@ -1,5 +1,8 @@
 from embeddings.embedding_model import embedding_model
 
+"""
+Generate keyword and bio embeddings for workers.
+"""
 
 # GENERATE WORKER EMBEDDINGS =========================================
 def generate_worker_embeddings(workers):

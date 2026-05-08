@@ -1,9 +1,13 @@
 import requests
 
 
+"""
+Load up workers from an API.
+"""
+
 def load_workers_from_api(url: str):
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=30)
 
     if response.status_code != 200:
         raise Exception(f"API Error: {response.status_code}")
