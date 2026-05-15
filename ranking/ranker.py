@@ -1,16 +1,15 @@
+"""
+Worker ranking system.
+"""
+
 import numpy as np
 
-from config import (
-    KEYWORD_WEIGHT,
-    BIO_WEIGHT
+from sklearn.metrics.pairwise import (
+    cosine_similarity
 )
 
-"""
-Rank workers against a contract embedding
-using keyword and bio similarity scores.
-"""
 
-# RANK WORKERS =====================================================
+# RANK WORKERS ============================
 def rank_workers(contract_embedding, workers):
 
     ranked = []
@@ -19,24 +18,45 @@ def rank_workers(contract_embedding, workers):
 
     for worker in workers:
 
-        keyword_score = np.dot(
-            contract_embedding,
-            worker["keyword_embedding"]
-        )
 
-        bio_score = np.dot(
-            contract_embedding,
-            worker["bio_embedding"]
-        )
+        # KEYWORD MATCHING=====================
 
-        # WEIGHTED SCORE FUSION
+        keyword_scores = []
+
+        for keyword_embedding in worker[
+            "keyword_embeddings"
+        ]:
+
+            sim = cosine_similarity(
+                [contract_embedding],
+                [keyword_embedding]
+            )[0][0]
+
+            keyword_scores.append(sim)
+
+        # BEST KEYWORD MATCH
+        keyword_score = max(keyword_scores)
+
+
+        # BIO MATCHING =============================
+
+        bio_score = cosine_similarity(
+            [contract_embedding],
+            [worker["bio_embedding"]]
+        )[0][0]
+
+
+        # FINAL SCORE ==============================
+
         final_score = (
-                KEYWORD_WEIGHT * keyword_score
-                +
-                BIO_WEIGHT * bio_score
+            0.8 * keyword_score
+            +
+            0.2 * bio_score
         )
+
 
         ranked.append({
+
             "id": worker["id"],
             "name": worker["name"],
 
@@ -51,6 +71,7 @@ def rank_workers(contract_embedding, workers):
 
             "keywords": worker["keywords"]
         })
+
 
     ranked.sort(
         key=lambda x: x["score"],

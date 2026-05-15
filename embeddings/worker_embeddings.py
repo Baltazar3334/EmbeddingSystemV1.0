@@ -1,10 +1,13 @@
-from embeddings.embedding_model import embedding_model
-
 """
-Generate keyword and bio embeddings for workers.
+Generate worker embeddings.
 """
 
-# GENERATE WORKER EMBEDDINGS =========================================
+from embeddings.embedding_model import (
+    embedding_model
+)
+
+
+# GENERATE WORKER EMBEDDINGS ===============================
 def generate_worker_embeddings(workers):
 
     print("\nGenerating worker embeddings...")
@@ -14,17 +17,15 @@ def generate_worker_embeddings(workers):
         keywords = worker.get("keywords", [])
         bio = worker.get("bio", "")
 
-        keywords_text = " ".join(keywords)
-
-        # KEYWORD EMBEDDING
-        worker["keyword_embedding"] = embedding_model.encode(
-            [keywords_text]
-        )[0]
+        # KEYWORD EMBEDDINGS
+        worker["keyword_embeddings"] = (
+            embedding_model.encode(keywords)
+        )
 
         # BIO EMBEDDING
-        worker["bio_embedding"] = embedding_model.encode(
-            [bio]
-        )[0]
+        worker["bio_embedding"] = (
+            embedding_model.encode([bio])[0]
+        )
 
     print("Worker embeddings generated")
 

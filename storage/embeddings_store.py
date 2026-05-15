@@ -14,18 +14,19 @@ def save_workers_embeddings(workers, path=EMBEDDINGS_CACHE_PATH):
     serializable_workers = []
 
     for worker in workers:
-
         serializable_workers.append({
             "id": worker["id"],
             "name": worker["name"],
             "keywords": worker["keywords"],
             "bio": worker["bio"],
 
-            "keyword_embedding":
-            worker["keyword_embedding"].tolist(),
+            "keyword_embeddings": [
+                emb.tolist()
+                for emb in worker["keyword_embeddings"]
+            ],
 
             "bio_embedding":
-            worker["bio_embedding"].tolist()
+                worker["bio_embedding"].tolist()
         })
 
     with open(path, "w", encoding="utf-8") as f:
@@ -48,9 +49,10 @@ def load_workers_embeddings(path=EMBEDDINGS_CACHE_PATH):
         workers = json.load(f)
 
     for worker in workers:
-        worker["keyword_embedding"] = np.array(
-            worker["keyword_embedding"]
-        )
+        worker["keyword_embeddings"] = [
+            np.array(emb)
+            for emb in worker["keyword_embeddings"]
+        ]
 
         worker["bio_embedding"] = np.array(
             worker["bio_embedding"]
