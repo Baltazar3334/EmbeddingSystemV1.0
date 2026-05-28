@@ -13,8 +13,11 @@ TOP_N_WORKERS = 20
 #how much similarity does a worker need to have to be considered
 SIMILARITY_THRESHOLD = 0.3 #not implemented
 
-#the weight of worker keywords, affecting how much keywords affect the overall rating
-KEYWORD_WEIGHT = 0.8
 
-#same for bio
-BIO_WEIGHT = 0.2
+#weights of various components of the worker ratings
+
+KEYWORD_WEIGHT = 0.4
+
+BIO_WEIGHT = 0.3
+
+LLM_WEIGHT = 0.3

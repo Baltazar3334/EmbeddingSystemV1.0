@@ -18,7 +18,7 @@ from services.match_service import (
 )
 
 """
-CLI entrypoint for worker matching system.
+CLI entrypoint for worker matching system. OUTDATED
 """
 
 # MAIN =====================================================

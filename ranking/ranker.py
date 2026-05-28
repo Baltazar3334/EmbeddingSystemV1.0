@@ -46,22 +46,10 @@ def rank_workers(contract_embedding, workers):
         )[0][0]
 
 
-        # FINAL SCORE ==============================
-
-        final_score = (
-            0.8 * keyword_score
-            +
-            0.2 * bio_score
-        )
-
-
         ranked.append({
 
             "id": worker["id"],
             "name": worker["name"],
-
-            "score":
-                round(float(final_score), 4),
 
             "keyword_score":
                 round(float(keyword_score), 4),
@@ -69,12 +57,17 @@ def rank_workers(contract_embedding, workers):
             "bio_score":
                 round(float(bio_score), 4),
 
+            "semantic_score":
+                (round(float(bio_score), 4) + round(float(keyword_score), 4)) * 0.5,
+
             "keywords": worker["keywords"]
         })
 
-
     ranked.sort(
-        key=lambda x: x["score"],
+        key=lambda x: (
+                x["keyword_score"] +
+                x["bio_score"]
+        ),
         reverse=True
     )
 
