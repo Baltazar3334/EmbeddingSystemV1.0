@@ -36,6 +36,10 @@ from storage.rankings_store import (
 )
 
 from config import (
+TOP_N_WORKERS
+)
+
+from config import (
 KEYWORD_WEIGHT,
 BIO_WEIGHT,
 LLM_WEIGHT
@@ -128,7 +132,7 @@ def generate_llm_ranking(
         workers
     )
 
-    top_workers = ranked[:100]
+    top_workers = ranked[:TOP_N_WORKERS]
 
 
     # LLM RERANKING ======================================
@@ -151,20 +155,7 @@ def generate_llm_ranking(
         )
 
         # FINAL HYBRID SCORE
-        worker["final_score"] = round(
-
-            (
-                    KEYWORD_WEIGHT * worker["keyword_score"]
-                    +
-                    BIO_WEIGHT * worker["bio_score"]
-                    +
-                    LLM_WEIGHT * (
-                            worker["llm_score"] / 100
-                    )
-            ),
-
-            4
-        )
+        worker["final_score"] = round((KEYWORD_WEIGHT * worker["keyword_score"] + BIO_WEIGHT * worker["bio_score"] + LLM_WEIGHT * (worker["llm_score"] / 100)),4)
 
         final_workers.append(worker)
 

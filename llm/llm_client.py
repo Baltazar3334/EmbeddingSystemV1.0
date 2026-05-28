@@ -4,10 +4,13 @@ Ollama LLM client.
 
 import requests
 
+from config import(
+MODEL_NAME_LLM
+)
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
-MODEL_NAME = "qwen2.5:7b"
+MODEL_NAME = MODEL_NAME_LLM
 
 
 # GENERATE ================================================
