@@ -89,5 +89,5 @@ async def match_contract_api(
     ranked = match_contract(contract_text)
 
     return {
-        "workers": ranked[:TOP_N_WORKERS]
+        "workers": ranked
     }
